@@ -17,7 +17,8 @@ public class DriveTrain {
   static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(frontLeftTranslation, frontRightTranslation,
       backLeftTranslation, backRightTranslation);
 
-  public static final SwerveDriveOdometry ODOMETRY = new SwerveDriveOdometry(KINEMATICS, RobotMap.GYRO.getYaw()); 
+  public static final SwerveDriveOdometry ODOMETRY = new SwerveDriveOdometry(KINEMATICS,
+      new Rotation2d(RobotMap.GYRO.getYaw()));
 
   public static void drive() {
     double xSpeed = RobotMap.CONTROLLER.getX(Hand.kLeft) * Constants.MAX_SPEED;
@@ -27,7 +28,6 @@ public class DriveTrain {
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(
         Constants.FIELD_RELATIVE ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, getAngle())
             : new ChassisSpeeds(xSpeed, ySpeed, rotation));
-    
 
     SwerveDriveKinematics.normalizeWheelSpeeds(moduleStates, Constants.MAX_SPEED);
 
