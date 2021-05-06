@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.wpilibj.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
 
 public class DriveTrain {
@@ -16,6 +17,8 @@ public class DriveTrain {
   static final SwerveDriveKinematics KINEMATICS = new SwerveDriveKinematics(frontLeftTranslation, frontRightTranslation,
       backLeftTranslation, backRightTranslation);
 
+  public static final SwerveDriveOdometry ODOMETRY = new SwerveDriveOdometry(KINEMATICS, RobotMap.GYRO.getYaw()); 
+
   public static void drive() {
     double xSpeed = RobotMap.CONTROLLER.getX(Hand.kLeft) * Constants.MAX_SPEED;
     double ySpeed = RobotMap.CONTROLLER.getY(Hand.kLeft) * Constants.MAX_SPEED;
@@ -24,6 +27,7 @@ public class DriveTrain {
     SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(
         Constants.FIELD_RELATIVE ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, getAngle())
             : new ChassisSpeeds(xSpeed, ySpeed, rotation));
+    
 
     SwerveDriveKinematics.normalizeWheelSpeeds(moduleStates, Constants.MAX_SPEED);
 
