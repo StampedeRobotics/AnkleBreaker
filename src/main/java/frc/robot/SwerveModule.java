@@ -37,7 +37,7 @@ public class SwerveModule {
         this.turningMotor = turningMotor;
         this.turningEncoder = turningEncoder;
         this.turningEncoderOffset = turningEncoderOffset;
-        this.turningPIDController = new ProfiledPIDController(0.8, 0, 0, CONSTRAINTS);
+        this.turningPIDController = new ProfiledPIDController(0.8, 0, 0, CONSTRAINTS); // hi
 
         turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
