@@ -19,12 +19,12 @@ public class SwerveModule {
 
     private final WPI_TalonFX driveMotor;
     private final TalonFXSensorCollection driveEncoder;
-    private final PIDController drivePIDController = new PIDController(0.5, 0, 0.98);
 
     private final WPI_TalonFX turningMotor;
     private CANCoder turningEncoder;
     private final double turningEncoderOffset;
     private final ProfiledPIDController turningPIDController;
+    private final SimpleMotorFeedforward turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
 
     private static final Constraints CONSTRAINTS = new TrapezoidProfile.Constraints(Constants.MAX_ANGULAR_SPEED,
             Constants.MAX_ANGULAR_ACCELERATION);
@@ -37,8 +37,9 @@ public class SwerveModule {
         this.turningMotor = turningMotor;
         this.turningEncoder = turningEncoder;
         this.turningEncoderOffset = turningEncoderOffset;
-        this.turningPIDController = new ProfiledPIDController(0.8, 0, 0, CONSTRAINTS);
+        this.turningPIDController = new ProfiledPIDController(1, 0, 0, CONSTRAINTS);
 
+        turningEncoder.setPositionToAbsolute();
         turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
 
         // Set the distance per pulse for the drive encoder. We can simply use the
@@ -62,22 +63,23 @@ public class SwerveModule {
         return Math.toRadians(turningEncoder.getAbsolutePosition());
     }
 
-    public void setState(SwerveModuleState desiredState) {
+    public void setState(SwerveModuleState state) {
         // Optimize the reference state to avoid spinning further than 90 degrees
-        SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d(getTurnAngle()));
-
-        SmartDashboard.putNumber("Drive" + id, getTurnAngle());
+        // SwerveModuleState state = SwerveModuleState.optimize(desiredState, new
+        // Rotation2d(getTurnAngle()));
 
         // Calculate the drive output from the drive PID controller.
         // double turnOutput =
         // drivePIDController.calculate(turningEncoder.getAbsolutePosition(),
         // state.angle.getDegrees());
         // Calculate the turning motor output from the turning PID controller.
+        SmartDashboard.putNumber("Angle" + id, getTurnAngle());
         final double turnOutput = turningPIDController.calculate(getTurnAngle(), state.angle.getRadians());
         SmartDashboard.putNumber("Turn" + id, turnOutput);
-
-        // SmartDashboard.putNumber("Drive" + id, turnOutput);
+        final double turnFeed = turnFeedforward.calculate(turningPIDController.getSetpoint().velocity);
+        SmartDashboard.putNumber("Goal" + id, state.angle.getRadians());
+        SmartDashboard.putNumber("Drive" + id, turnFeed);
         // driveMotor.set(state.speedMetersPerSecond / Constants.MAX_SPEED);
-        turningMotor.set(turnOutput);
+        turningMotor.setVoltage(turnOutput + turnFeed);
     }
 }
