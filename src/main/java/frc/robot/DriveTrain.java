@@ -24,20 +24,21 @@ public class DriveTrain {
 
     public static void drive() {
         // Get speeds from controller
-        double xSpeed = RobotMap.CONTROLLER.getX(Hand.kLeft) * Constants.MAX_SPEED;
-        double ySpeed = RobotMap.CONTROLLER.getY(Hand.kLeft) * Constants.MAX_SPEED;
+        double xSpeed = RobotMap.CONTROLLER.getX(Hand.kLeft) * Constants.MAX_SPEED * .05;
+        double ySpeed = RobotMap.CONTROLLER.getY(Hand.kLeft) * Constants.MAX_SPEED * .05;
 
-        if (xSpeed < 0.1)
-            xSpeed = 0;
-        if (ySpeed < 0.1)
-            ySpeed = 0;
+        // if (xSpeed < 0.1)
+        // xSpeed = 0;
+        // if (ySpeed < 0.1)
+        // ySpeed = 0;
 
         // Get the rotation from the controller
         double rotation = RobotMap.CONTROLLER.getX(Hand.kRight) * Constants.MAX_ANGULAR_SPEED;
 
-        SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(
-                Constants.FIELD_RELATIVE ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rotation, getAngle())
-                        : new ChassisSpeeds(xSpeed, ySpeed, rotation));
+        SwerveModuleState[] moduleStates = KINEMATICS.toSwerveModuleStates(new ChassisSpeeds(xSpeed, ySpeed, rotation));
+        // Constants.FIELD_RELATIVE ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed,
+        // ySpeed, rotation, getAngle())
+        // : new ChassisSpeeds(xSpeed, ySpeed, rotation));
 
         SwerveDriveKinematics.normalizeWheelSpeeds(moduleStates, Constants.MAX_SPEED);
 

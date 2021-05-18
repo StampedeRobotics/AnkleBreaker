@@ -1,5 +1,6 @@
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXSensorCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
@@ -23,11 +24,13 @@ public class SwerveModule {
     private final WPI_TalonFX turningMotor;
     private CANCoder turningEncoder;
     private final double turningEncoderOffset;
-    private final ProfiledPIDController turningPIDController;
-    private final SimpleMotorFeedforward turnFeedforward = new SimpleMotorFeedforward(1, 0.5);
+    private final PIDController turningPIDController;
+    // private final SimpleMotorFeedforward turnFeedforward = new
+    // SimpleMotorFeedforward(1, 0.5);
 
-    private static final Constraints CONSTRAINTS = new TrapezoidProfile.Constraints(Constants.MAX_ANGULAR_SPEED,
-            Constants.MAX_ANGULAR_ACCELERATION);
+    // private static final Constraints CONSTRAINTS = new
+    // TrapezoidProfile.Constraints(Constants.MAX_ANGULAR_SPEED,
+    // Constants.MAX_ANGULAR_ACCELERATION);
 
     public SwerveModule(int id, WPI_TalonFX driveMotor, WPI_TalonFX turningMotor, CANCoder turningEncoder,
             double turningEncoderOffset) {
@@ -37,7 +40,9 @@ public class SwerveModule {
         this.turningMotor = turningMotor;
         this.turningEncoder = turningEncoder;
         this.turningEncoderOffset = turningEncoderOffset;
-        this.turningPIDController = new ProfiledPIDController(1, 0, 0, CONSTRAINTS);
+        // this.turningPIDController = new ProfiledPIDController(.57, 6.84, .012,
+        // CONSTRAINTS);
+        this.turningPIDController = new PIDController(0.5, 0, 0.0);
 
         turningEncoder.setPositionToAbsolute();
         turningEncoder.configAbsoluteSensorRange(AbsoluteSensorRange.Signed_PlusMinus180);
@@ -56,30 +61,23 @@ public class SwerveModule {
 
         // Limit the PID Controller's input range between -pi and pi and set the input
         // to be continuous.
-        turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
+        turningPIDController.enableContinuousInput(-180, 180);
     }
 
     private double getTurnAngle() {
-        return Math.toRadians(turningEncoder.getAbsolutePosition());
+        return Math.toRadians(turningEncoder.getAbsolutePosition()) - turningEncoderOffset;
     }
 
-    public void setState(SwerveModuleState state) {
+    public void setState(SwerveModuleState desiredState) {
         // Optimize the reference state to avoid spinning further than 90 degrees
-        // SwerveModuleState state = SwerveModuleState.optimize(desiredState, new
-        // Rotation2d(getTurnAngle()));
+        SwerveModuleState state = SwerveModuleState.optimize(desiredState, new Rotation2d(getTurnAngle()));
 
         // Calculate the drive output from the drive PID controller.
-        // double turnOutput =
-        // drivePIDController.calculate(turningEncoder.getAbsolutePosition(),
-        // state.angle.getDegrees());
         // Calculate the turning motor output from the turning PID controller.
         SmartDashboard.putNumber("Angle" + id, getTurnAngle());
         final double turnOutput = turningPIDController.calculate(getTurnAngle(), state.angle.getRadians());
-        SmartDashboard.putNumber("Turn" + id, turnOutput);
-        final double turnFeed = turnFeedforward.calculate(turningPIDController.getSetpoint().velocity);
-        SmartDashboard.putNumber("Goal" + id, state.angle.getRadians());
-        SmartDashboard.putNumber("Drive" + id, turnFeed);
-        // driveMotor.set(state.speedMetersPerSecond / Constants.MAX_SPEED);
-        turningMotor.setVoltage(turnOutput + turnFeed);
+
+        // turningMotor.set(turnOutput);
+        // driveMotor.set(state.speedMetersPerSecond);
     }
 }
