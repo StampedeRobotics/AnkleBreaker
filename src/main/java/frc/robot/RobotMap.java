@@ -12,11 +12,6 @@ public class RobotMap {
 
     public static final AHRS GYRO = new AHRS(SPI.Port.kMXP);
 
-    static final double FRONT_LEFT_ANGLE_OFFSET = 0;
-    static final double FRONT_RIGHT_ANGLE_OFFSET = 0;
-    static final double BACK_LEFT_ANGLE_OFFSET = 0;
-    static final double BACK_RIGHT_ANGLE_OFFSET = 0;
-
     public static final SwerveModule FRONT_LEFT = new SwerveModule(1, new WPI_TalonFX(8), new WPI_TalonFX(9),
             new CANCoder(2), Constants.FRONT_LEFT_ANGLE_OFFSET);
 

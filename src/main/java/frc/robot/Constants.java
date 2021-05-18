@@ -12,9 +12,9 @@ public class Constants {
   public static final int TALONFX_RESOLUTION = 2048;
   public static final double WHEEL_RADIUS = 0.051;
 
-  public static final double BACK_RIGHT_ANGLE_OFFSET = 0.715;
-  public static final double BACK_LEFT_ANGLE_OFFSET = 0.823;
-  public static final double FRONT_RIGHT_ANGLE_OFFSET = 2.553;
-  public static final double FRONT_LEFT_ANGLE_OFFSET = 1.585;
+  public static final double BACK_RIGHT_ANGLE_OFFSET = 2.01 + Math.PI;
+  public static final double BACK_LEFT_ANGLE_OFFSET = -0.46;
+  public static final double FRONT_RIGHT_ANGLE_OFFSET = -2.56 + Math.PI;
+  public static final double FRONT_LEFT_ANGLE_OFFSET = 0.07;
 
 }

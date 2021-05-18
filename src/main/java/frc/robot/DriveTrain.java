@@ -20,17 +20,17 @@ public class DriveTrain {
             frontRightTranslation, backLeftTranslation, backRightTranslation);
 
     public static final SwerveDriveOdometry ODOMETRY = new SwerveDriveOdometry(KINEMATICS,
-            new Rotation2d(RobotMap.GYRO.getYaw()));
+            Rotation2d.fromDegrees(RobotMap.GYRO.getYaw()));
 
     public static void drive() {
         // Get speeds from controller
         double xSpeed = RobotMap.CONTROLLER.getX(Hand.kLeft) * Constants.MAX_SPEED * .05;
         double ySpeed = RobotMap.CONTROLLER.getY(Hand.kLeft) * Constants.MAX_SPEED * .05;
 
-        // if (xSpeed < 0.1)
-        // xSpeed = 0;
-        // if (ySpeed < 0.1)
-        // ySpeed = 0;
+        if (Math.abs(xSpeed) < 0.1)
+            xSpeed = 0;
+        if (Math.abs(ySpeed) < 0.1)
+            ySpeed = 0;
 
         // Get the rotation from the controller
         double rotation = RobotMap.CONTROLLER.getX(Hand.kRight) * Constants.MAX_ANGULAR_SPEED;

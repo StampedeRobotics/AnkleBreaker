@@ -61,7 +61,7 @@ public class SwerveModule {
 
         // Limit the PID Controller's input range between -pi and pi and set the input
         // to be continuous.
-        turningPIDController.enableContinuousInput(-180, 180);
+        turningPIDController.enableContinuousInput(-Math.PI, Math.PI);
     }
 
     private double getTurnAngle() {
@@ -77,7 +77,7 @@ public class SwerveModule {
         SmartDashboard.putNumber("Angle" + id, getTurnAngle());
         final double turnOutput = turningPIDController.calculate(getTurnAngle(), state.angle.getRadians());
 
-        // turningMotor.set(turnOutput);
-        // driveMotor.set(state.speedMetersPerSecond);
+        turningMotor.set(turnOutput);
+        driveMotor.set(state.speedMetersPerSecond);
     }
 }
